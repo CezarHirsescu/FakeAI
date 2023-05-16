@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "../firebase";
-import { Button1, TextInput1 } from "../Components";
+import { Button1, TextInput1 } from "../components";
 import { COLORS, SIZES, FONTS } from "../constants";
 
 const SignUpScreen = () => {
