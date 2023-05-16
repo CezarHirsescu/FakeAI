@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, Text } from "react-native";
+import { Image, StyleSheet, View, Text, SafeAreaView } from "react-native";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { auth } from "../firebase";
@@ -39,7 +39,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image
         style={styles.logo}
         source={require("../assets/adaptive-icon.png")}
@@ -61,7 +61,7 @@ const LoginScreen = () => {
         width={"80%"}
         onPress={handleSignUp}
       ></Button1>
-    </View>
+    </SafeAreaView>
   );
 };
 
