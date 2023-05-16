@@ -39,7 +39,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image
         style={styles.logo}
         source={require("../assets/adaptive-icon.png")}
@@ -61,7 +61,7 @@ const LoginScreen = () => {
         width={"80%"}
         onPress={handleSignUp}
       ></Button1>
-    </SafeAreaView>
+    </View>
   );
 };
 
