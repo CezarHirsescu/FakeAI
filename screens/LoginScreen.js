@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/core";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-import { Button1, TextInput1 } from "../components";
+import { Button1, TextInput1 } from "../Components";
 import { COLORS, SIZES } from "../constants";
 
 const LoginScreen = () => {

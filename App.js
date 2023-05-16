@@ -5,7 +5,7 @@ import { StyleSheet, Text, SafeAreaView } from "react-native";
 // import ConfirmSignUpScreen from "./src/screens/ConfirmSignUpScreen";
 // import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
 // import NewPasswordScreen from "./src/screens/NewPasswordScreen";
-import Navigation from "../FakeAI/Navigation";
+import Navigation from "./Navigation";
 import { useFonts } from "expo-font";
 
 export default function App() {

@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { useNavigation } from "@react-navigation/core";
 
-import { Button1, TextInput1 } from "../components";
+import { Button1, TextInput1 } from "../Components";
 import { COLORS, SIZES, FONTS } from "../constants";
 
 import {
