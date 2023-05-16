@@ -15,6 +15,7 @@ import {
 import Navigation from "./Navigation";
 import { TextInput1, Button1 } from "./components";
 import { useFonts } from "expo-font";
+import { COLORS } from "./constants";
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -47,6 +48,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "black",
+    backgroundColor: COLORS.darkGray,
   },
 });
