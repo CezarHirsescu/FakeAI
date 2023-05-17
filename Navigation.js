@@ -21,6 +21,15 @@ const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
+function Tabs() {
+  return (
+    <Tab.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeScreen}></Stack.Screen>
+      <Tab.Screen name="Settings" component={SignUpScreen} />
+    </Tab.Navigator>
+  );
+}
+
 const Navigation = () => {
   return (
     <NavigationContainer>
@@ -35,12 +44,8 @@ const Navigation = () => {
           name="RegisterConfirmScreen"
           component={ConfirmSignUpScreen}
         ></Stack.Screen>
-        <Stack.Screen name="HomeScreen" component={HomeScreen}></Stack.Screen>
+        <Stack.Screen name="Tabs" component={Tabs}></Stack.Screen>
       </Stack.Navigator>
-      {/* <Tab.Navigator>
-        <Tab.Screen name="Home" component={LoginScreen} />
-        <Tab.Screen name="Settings" component={SignUpScreen} />
-      </Tab.Navigator> */}
     </NavigationContainer>
   );
 };

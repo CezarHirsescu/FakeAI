@@ -28,7 +28,7 @@ const ConfirmSignUpScreen = () => {
     user.reload();
     if (user) {
       if (user.emailVerified === true) {
-        navigation.navigate("HomeScreen");
+        navigation.navigate("Tabs");
       } else {
         sendVerification();
       }
@@ -38,7 +38,7 @@ const ConfirmSignUpScreen = () => {
   const sendVerification = () => {
     user.reload();
     if (user.emailVerified === true) {
-      navigation.navigate("HomeScreen");
+      navigation.navigate("Tabs");
     } else {
       sendEmailVerification(auth.currentUser)
         .then(() => {})

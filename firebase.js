@@ -3,16 +3,14 @@ import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyANVfNtp32yykjQcXxiz6uSBle4lBvGVx8",
-  authDomain: "fir-forroutineapp.firebaseapp.com",
-  databaseURL: "https://fir-forroutineapp-default-rtdb.firebaseio.com",
-  projectId: "fir-forroutineapp",
-  storageBucket: "fir-forroutineapp.appspot.com",
-  messagingSenderId: "769641830991",
-  appId: "1:769641830991:web:79bbda851a80c78218683a",
-  measurementId: "G-PP4CLJ5LSM",
+  apiKey: "AIzaSyBbIMb5pljsOK7DpB3gi6ykckmVPqNBOoo",
+  authDomain: "fakeai.firebaseapp.com",
+  projectId: "fakeai",
+  storageBucket: "fakeai.appspot.com",
+  messagingSenderId: "484419710239",
+  appId: "1:484419710239:web:0d74ff919e3cd464a9542a",
+  measurementId: "G-NLGWLCZ8P5",
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 

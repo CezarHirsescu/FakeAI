@@ -33,11 +33,6 @@ export default function App() {
     <SafeAreaView style={styles.root}>
       <Navigation />
     </SafeAreaView>
-    // <SafeAreaView style={[styles.container]}>
-    //   <View style={{ backgroundColor: "blue" }}>
-    //     <Text style={{ fontSize: 28, color: "white" }}>Hello World</Text>
-    //   </View>
-    // </SafeAreaView>
   );
 }
 
