@@ -33,7 +33,7 @@ const ConfirmSignUpScreen = () => {
         sendVerification();
       }
     }
-  });
+  }, []);
 
   const sendVerification = () => {
     user.reload();

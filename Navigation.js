@@ -14,6 +14,7 @@ import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import ConfirmSignUpScreen from "./screens/ConfirmSignUpScreen";
 import HomeScreen from "./screens/HomeScreen";
+import LoadingScreen from "./screens/LoadingScreen";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -34,8 +35,12 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* <Stack.Screen
+          name="LoadingScreen"
+          component={LoadingScreen}
+        ></Stack.Screen> */}
         <Stack.Screen name="LoginScreen" component={LoginScreen}></Stack.Screen>
-        {/* <Stack.Screen name="TestScreen" component={TestScreen}></Stack.Screen> */}
+        <Stack.Screen name="Tabs" component={Tabs}></Stack.Screen>
         <Stack.Screen
           name="RegisterScreen"
           component={SignUpScreen}
@@ -44,7 +49,6 @@ const Navigation = () => {
           name="RegisterConfirmScreen"
           component={ConfirmSignUpScreen}
         ></Stack.Screen>
-        <Stack.Screen name="Tabs" component={Tabs}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
