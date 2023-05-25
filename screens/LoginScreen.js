@@ -39,7 +39,6 @@ const LoginScreen = () => {
 
   useEffect(() => {
     getRembemberMeState((rememberState) => {
-      console.log(rememberState);
       if (String(rememberState) === "true") {
         readUserCredentials((loginCreds) =>
           handleLogin(loginCreds.email, loginCreds.password)
