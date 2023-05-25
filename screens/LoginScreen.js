@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
 } from "firebase/auth";
-import { Button1, TextInput1 } from "../components";
+import { Button1, TextInput1, RememberMeCheckBox } from "../components";
 import { COLORS, SIZES } from "../constants";
 import { useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
@@ -18,18 +18,17 @@ WebBrowser.maybeCompleteAuthSession();
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
   const [loginCreds, setLoginCreds] = useState({});
   const navigation = useNavigation();
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
-      "484419710239-7vdtskqgv5f2rdqgk2f57mtr1mcannv8.apps.googleusercontent.com",
+      "48441971s0239-7vdtskqgv5f2rdqgk2f57mtr1mcannv8.apps.googleusercontent.com",
     iosClientId:
       "484419710239-7ajkq2l6lddnv6m2tegada7e1lml768r.apps.googleusercontent.com",
     expoClientId:
       "484419710239-l6752ivpn6f8ikets34iq3ip5m1fn34b.apps.googleusercontent.com",
     webClientId:
-      "484419710239-l6752ivpn6f8ikets34iq3ip5m1fn34b.apps.googleusercontent.com",
+      "484419710239-875b0rin3sh4b3pasfl22k06q7m229jm.apps.googleusercontent.com",
   });
 
   useEffect(() => {
@@ -39,13 +38,27 @@ const LoginScreen = () => {
   }, [response]);
 
   useEffect(() => {
-    if (rememberMe === true) {
-      readUserCredentials((loginCreds) =>
-        handleLogin(loginCreds.email, loginCreds.password)
-      );
-    }
+    getRembemberMeState((rememberState) => {
+      console.log(rememberState);
+      if (String(rememberState) === "true") {
+        readUserCredentials((loginCreds) =>
+          handleLogin(loginCreds.email, loginCreds.password)
+        );
+      }
+    });
   }, []);
 
+  const getRembemberMeState = async (callback) => {
+    try {
+      const value = await AsyncStorage.getItem("@rememberstate");
+      if (value !== null) {
+        callback(JSON.parse(value));
+      }
+    } catch (e) {
+      console.log("Can't read your data");
+      alert(e);
+    }
+  };
   const getGoogleAccountInfo = async (token) => {
     try {
       const response = await fetch(
@@ -93,13 +106,7 @@ const LoginScreen = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((results) => {
         //save email & password
-        if (rememberMe === true) {
-          // save data
-          saveUserCredentials(email, password);
-        } else if (rememberMe === false) {
-          // clear save data
-          unsaveUserCredentials();
-        }
+        saveUserCredentials(email, password);
         auth.updateCurrentUser(results.user);
         if (auth.currentUser.emailVerified === false) {
           navigation.navigate("RegisterConfirmScreen");
@@ -167,6 +174,7 @@ const LoginScreen = () => {
         placeholder={"Password"}
         secureTextEntry={true}
       ></TextInput1>
+      <RememberMeCheckBox />
       <Button1
         title={"Login"}
         width={"80%"}

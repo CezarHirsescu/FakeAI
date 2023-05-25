@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
-import ChatScreen from "./ChatScreen"
+import ChatScreen from "./ChatScreen";
 import { COLORS } from "../constants";
+import { CheckBox } from "../components";
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text>This is home.</Text> */}
-      <ChatScreen />
+      <Text>HEYYY</Text>
     </SafeAreaView>
   );
 }
