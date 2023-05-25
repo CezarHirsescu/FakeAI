@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     flexWrap: "nowrap",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#222222"
+    backgroundColor: COLORS.darkGray
   },
   topBar: {
     width: "100%",
