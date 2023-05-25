@@ -7,7 +7,7 @@ import { CheckBox } from "../components";
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>HEYYY</Text>
+      <Text>This is home.</Text>
     </SafeAreaView>
   );
 }
