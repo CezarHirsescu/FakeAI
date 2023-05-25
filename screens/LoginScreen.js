@@ -1,14 +1,6 @@
-import {
-  Image,
-  StyleSheet,
-  View,
-  Text,
-  SafeAreaView,
-  Button,
-} from "react-native";
+import { Image, StyleSheet, View, Button } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { auth, db } from "../firebase";
-import { set, get, ref, update, child } from "firebase/database";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -26,8 +18,9 @@ WebBrowser.maybeCompleteAuthSession();
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userInfo, setUserInfo] = useState(null);
-  const [saveLoginInfo, setSaveLoginInfo] = useState({});
+  const [rememberMe, setRememberMe] = useState(true);
+  const [loginCreds, setLoginCreds] = useState({});
+  const navigation = useNavigation();
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
       "484419710239-7vdtskqgv5f2rdqgk2f57mtr1mcannv8.apps.googleusercontent.com",
@@ -38,49 +31,22 @@ const LoginScreen = () => {
     webClientId:
       "484419710239-l6752ivpn6f8ikets34iq3ip5m1fn34b.apps.googleusercontent.com",
   });
-  const navigation = useNavigation();
 
-  // Call Auto Login
   useEffect(() => {
-    readUserData((userInfo) => autoLogin(userInfo));
-  }, []);
-
-  // Call Google Login
-  useEffect(() => {
-    if (response) {
-      handleSignInWithGoogle();
+    if (response?.type === "success") {
+      getGoogleAccountInfo(response.authentication.accessToken);
     }
   }, [response]);
 
-  // Auto Login
-  const autoLogin = (userInfo) => {
-    setEmail(userInfo.email);
-    setPassword(userInfo.password);
-    handleLogin(userInfo.email, userInfo.password);
-  };
-
-  //Google Login
-  async function handleSignInWithGoogle() {
-    const user = await AsyncStorage.getItem("@user");
-    if (!user) {
-      if (response?.type === "success") {
-        await getUserInfo(response.authentication.accessToken);
-        googleEmailRegisterOrLogin();
-      }
-    } else {
-      userCreds = {
-        email: user.email,
-        password: user.id,
-      };
-      setEmail(user.email);
-      setPassword(user.id);
-      saveUserData(JSON.stringify(userCreds));
-      googleEmailRegisterOrLogin();
+  useEffect(() => {
+    if (rememberMe === true) {
+      readUserCredentials((loginCreds) =>
+        handleLogin(loginCreds.email, loginCreds.password)
+      );
     }
-  }
+  }, []);
 
-  const getUserInfo = async (token) => {
-    if (!token) return;
+  const getGoogleAccountInfo = async (token) => {
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
@@ -90,94 +56,98 @@ const LoginScreen = () => {
       );
 
       const user = await response.json();
-      userData = {
-        id: user.id,
-        email: user.email,
-        verified: user.verified_email,
-        name: user.name,
-      };
       setEmail(user.email);
       setPassword(user.id);
-      userCreds = {
-        email: user.email,
-        password: user.id,
-      };
-      saveUserData(JSON.stringify(userCreds));
-    } catch (error) {}
+      signInWithGoogle(user.email, user.id);
+    } catch (error) {
+      // Add your own error handler here
+    }
   };
 
-  //Firebase Authentication Login
-  const handleLogin = (email, password) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        userData = {
-          id: userCredentials.user.uid,
-          email: userCredentials.user.email,
-          verified: userCredentials.user.emailVerified,
-          name: userCredentials.user.displayName,
-        };
-        userCreds = {
-          email: email,
-          password: password,
-        };
-        saveUserData(JSON.stringify(userCreds));
-        if (userData.emailVerified === true) {
-          navigation.navigate("Tabs");
+  const signInWithGoogle = (email, password) => {
+    fetchSignInMethodsForEmail(auth, email)
+      .then((result) => {
+        if (result.length == 0) {
+          //register email = email, password = id
+          createUserWithEmailAndPassword(auth, email, password).then(
+            (results) => {
+              auth.updateCurrentUser(results.user);
+              if (auth.currentUser.emailVerified === false) {
+                navigation.navigate("RegisterConfirmScreen");
+              } else {
+                navigation.navigate("Tabs");
+              }
+            }
+          );
         } else {
-          navigation.navigate("RegisterConfirmScreen");
+          // login email = email, password = id
+          handleLogin(email, password);
         }
       })
-      .catch((error) => alert(error.message));
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  // Authentication Process Local Save
-  const saveUserData = async (userCredentials) => {
+  const handleLogin = (email, password) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((results) => {
+        //save email & password
+        if (rememberMe === true) {
+          // save data
+          saveUserCredentials(email, password);
+        } else if (rememberMe === false) {
+          // clear save data
+          unsaveUserCredentials();
+        }
+        auth.updateCurrentUser(results.user);
+        if (auth.currentUser.emailVerified === false) {
+          navigation.navigate("RegisterConfirmScreen");
+        } else {
+          navigation.navigate("Tabs");
+        }
+      })
+      .catch((error) => {
+        alert(
+          "You have entered a wrong password or, your email is linked with another account!"
+        );
+      });
+  };
+
+  const saveUserCredentials = async (email, password) => {
+    userCredentials = {
+      email: email,
+      password: password,
+    };
     try {
-      await AsyncStorage.setItem("@usercredentials", userCredentials);
-      setSaveLoginInfo(JSON.parse(userCredentials));
-      // setSaveLoginInfo({ email: "hey", password: "dad" });
+      await AsyncStorage.setItem(
+        "@usercredentials",
+        JSON.stringify(userCredentials)
+      );
     } catch (e) {
-      alert("failed to save the data");
+      alert("Failed to save the data");
+    }
+  };
+
+  const unsaveUserCredentials = () => {
+    //unsave data if rememberMe === false
+  };
+
+  const readUserCredentials = async (callback) => {
+    try {
+      const value = await AsyncStorage.getItem("@usercredentials");
+      if (value !== null) {
+        setLoginCreds(JSON.parse(value));
+        callback(JSON.parse(value));
+      }
+    } catch (e) {
+      console.log("Can't read your data");
       alert(e);
     }
   };
 
-  // Authentication Process Local Read
-  const readUserData = async (callBack) => {
-    try {
-      const value = await AsyncStorage.getItem("@usercredentials");
-      if (value !== null) {
-        setSaveLoginInfo(JSON.parse(value));
-        callBack(JSON.parse(value));
-      }
-    } catch (e) {
-      alert("HEY I THISI S UR ERROr");
-    }
-  };
-
-  // Google Sign Up Email & Password
-  const googleEmailRegisterOrLogin = () => {
-    fetchSignInMethodsForEmail(auth, email).then((result) => {
-      if (result[0] === "password") {
-        handleLogin(email, password);
-      } else {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredentials) => {
-            const user = userCredentials.user;
-            console.log("Registered with:" + user.email);
-            navigation.navigate("RegisterConfirmScreen");
-          })
-          .catch((error) => alert(error.message));
-      }
-    });
-  };
-
   const handleSignUp = () => {
     navigation.navigate("RegisterScreen");
-  };
-
-  const forgotPassword = () => {
-    navigation.navigate("ForgotPassword");
   };
 
   return (
@@ -205,24 +175,23 @@ const LoginScreen = () => {
       <Button1
         title={"Get Started"}
         width={"80%"}
-        onPress={handleSignUp}
+        onPress={() => handleSignUp()}
       ></Button1>
       <Button
         title={"Sign In With Google"}
         onPress={() => promptAsync()}
       ></Button>
       <Button
-        title={"Delete Local Storage Google"}
-        onPress={() => AsyncStorage.removeItem("@user")}
-      ></Button>
-      <Button title={"Get Info"} onPress={() => console.log(userInfo)}></Button>
-      <Button
-        title={"Get Email"}
-        onPress={() => console.log(saveLoginInfo.email)}
+        title={"Press for current Email"}
+        onPress={() => console.log(email)}
       ></Button>
       <Button
-        title={"Get Pass"}
-        onPress={() => console.log(saveLoginInfo.password)}
+        title={"Press for current Password"}
+        onPress={() => console.log(password)}
+      ></Button>
+      <Button
+        title={"Read Saved Data"}
+        onPress={() => readUserCredentials()}
       ></Button>
     </View>
   );

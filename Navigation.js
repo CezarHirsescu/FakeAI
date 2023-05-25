@@ -15,6 +15,7 @@ import SignUpScreen from "./screens/SignUpScreen";
 import ConfirmSignUpScreen from "./screens/ConfirmSignUpScreen";
 import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -26,7 +27,7 @@ function Tabs() {
   return (
     <Tab.Navigator>
       <Stack.Screen name="HomeScreen" component={HomeScreen}></Stack.Screen>
-      <Tab.Screen name="Settings" component={SignUpScreen} />
+      <Tab.Screen name="ProfileScreen" component={ProfileScreen}></Tab.Screen>
     </Tab.Navigator>
   );
 }

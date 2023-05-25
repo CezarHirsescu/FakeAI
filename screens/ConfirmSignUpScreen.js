@@ -22,6 +22,7 @@ import {
 
 const ConfirmSignUpScreen = () => {
   const user = auth.currentUser;
+  console.log(user);
   const navigation = useNavigation();
 
   useEffect(() => {
