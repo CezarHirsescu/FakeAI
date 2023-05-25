@@ -14,6 +14,8 @@ import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import ConfirmSignUpScreen from "./screens/ConfirmSignUpScreen";
 import HomeScreen from "./screens/HomeScreen";
+import ChatScreen from "./screens/ChatScreen";
+
 import LoadingScreen from "./screens/LoadingScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 
@@ -25,9 +27,9 @@ const Tab = createBottomTabNavigator();
 
 function Tabs() {
   return (
-    <Tab.Navigator>
-      <Stack.Screen name="HomeScreen" component={HomeScreen}></Stack.Screen>
-      <Tab.Screen name="ProfileScreen" component={ProfileScreen}></Tab.Screen>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Chat" component={ChatScreen} />
+      <Tab.Screen name="Settings" component={SignUpScreen} />
     </Tab.Navigator>
   );
 }
