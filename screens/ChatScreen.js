@@ -83,13 +83,14 @@ const styles = StyleSheet.create({
     flexWrap: "nowrap",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: COLORS.darkGray
   },
   topBar: {
     width: "100%",
   },
   messageContainer: {
     width: "100%",
-    backgroundColor: "#222222",
+    backgroundColor: "#111111",
   
   },
   messageWrapper: {
