@@ -96,7 +96,7 @@ export default function HomeScreen() {
 					transform: [{ translateY: firstTextTranslateY }],
 				}}
 			>
-				Looking For a Game...
+				Looking For a Game...?
 			</Animated.Text>
 			<Animated.View
 				style={{
