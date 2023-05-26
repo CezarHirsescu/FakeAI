@@ -22,31 +22,31 @@ import {
 
 const ConfirmSignUpScreen = () => {
   const user = auth.currentUser;
-  console.log(user);
   const navigation = useNavigation();
 
   useEffect(() => {
-    user.reload();
-    if (user) {
-      if (user.emailVerified === true) {
+    user.reload().finally(() => {
+      if (user && user.emailVerified) {
         navigation.navigate("Tabs");
       } else {
-        sendVerification();
+        sendEmailVerification(auth.currentUser).catch(() =>
+          alert("Slow down and check your spam folder.")
+        );
       }
-    }
+    });
   }, []);
 
-  const sendVerification = () => {
-    user.reload();
-    if (user.emailVerified === true) {
-      navigation.navigate("Tabs");
-    } else {
-      sendEmailVerification(auth.currentUser)
-        .then(() => {})
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+  const checkEmailVerification = () => {
+    user.reload().finally(() => {
+      if (user && user.emailVerified) {
+        navigation.navigate("Tabs");
+      } else {
+        alert("Check your email.");
+        sendEmailVerification(auth.currentUser).catch(() =>
+          alert("Slow down and check your spam folder.")
+        );
+      }
+    });
   };
 
   return (
@@ -55,10 +55,11 @@ const ConfirmSignUpScreen = () => {
       <Text style={styles.text}>
         Please verify your account through your email!
       </Text>
-      <Button1
+      <Button1 title={"Click"} onPress={() => checkEmailVerification()} />
+      {/* <Button1
         title="Confirmed? Click Here"
         onPress={sendVerification}
-      ></Button1>
+      ></Button1> */}
     </View>
   );
 };
