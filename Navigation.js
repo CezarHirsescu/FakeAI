@@ -29,7 +29,7 @@ function Tabs() {
         tabBarStyle: { backgroundColor: COLORS.darkGray },
       }}
     >
-      <Tab.Screen name="Chat" component={ChatScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
