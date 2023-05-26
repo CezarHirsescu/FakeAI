@@ -184,22 +184,14 @@ const LoginScreen = () => {
         width={"80%"}
         onPress={() => handleSignUp()}
       ></Button1>
-      <Button
+      <Button1
         title={"Sign In With Google"}
         onPress={() => promptAsync()}
-      ></Button>
-      <Button
-        title={"Press for current Email"}
-        onPress={() => console.log(email)}
-      ></Button>
-      <Button
-        title={"Press for current Password"}
-        onPress={() => console.log(password)}
-      ></Button>
-      <Button
-        title={"Read Saved Data"}
-        onPress={() => readUserCredentials()}
-      ></Button>
+        width={"80%"}
+        buttonColor={"#4285F4"}
+        textColor={"white"}
+        imageSource={require("../assets/g-logo.png")}
+      ></Button1>
     </View>
   );
 };
