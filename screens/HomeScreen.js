@@ -80,11 +80,24 @@ export default function HomeScreen() {
         }}
       >
         <LottieView
-          ref={lottieRef}
-          style={{ height: 75 }}
-          loop={true}
           source={require("../assets/lottiefiles/loading.json")}
-          renderMode={"SOFTWARE"}
+          ref={lottieRef}
+          style={{ height: 75, width: "auto" }}
+          colorFilters={[
+            {
+              keypath: "Layer 3",
+              color: COLORS.white
+            },
+            {
+              keypath: "Layer 2",
+              color: COLORS.white
+            },
+            {
+              keypath: "Layer 1",
+              color: COLORS.white
+            },
+          ]}
+
         />
       </Animated.View>
     </View>
