@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "fakeAI",
     "name": "fakeAI",
     "slug": "fakeAI",
     "version": "1.0.0",
