@@ -61,8 +61,6 @@ export default function HomeScreen() {
     joinGame()
 	}
 
-  console.log(animationCompleted)
-
 	return animationCompleted ? (
 		<View style={{ ...styles.container, gap: 20 }}>
 			<Animated.Text
