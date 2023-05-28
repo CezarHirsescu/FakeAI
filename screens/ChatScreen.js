@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, SafeAreaView } from "react-native";
 import { Button1, TextInput1 } from "../components";
 import { COLORS, FONTS } from "../constants";
 
-const ChatScreen = () => {
+const ChatScreen = ({ chatID, AI, user1, user2 }) => {
   const [messages, setMessages] = useState([
     { user: 0, text: "Hello there" },
     { user: 1, text: "General Kenobi... You are a bold one." },

@@ -1,154 +1,154 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  ActivityIndicator,
-  Easing,
-} from "react-native";
-import { useRef, useState, useEffect } from "react";
-import LottieView from "lottie-react-native";
-import { COLORS, FONTS, SIZES } from "../constants";
-import { Button1 } from "../components";
+import { StyleSheet, View, Animated } from "react-native"
+import { useRef, useState, useEffect } from "react"
+import { useNavigation } from "@react-navigation/native"
+import LottieView from "lottie-react-native"
+import { COLORS, FONTS, SIZES } from "../constants"
+import { Button1 } from "../components"
+
 
 export default function HomeScreen() {
-  const [queued, setQueued] = useState(false);
-  const [animationCompleted, setAnimationCompleted] = useState(false);
+  const navigation = useNavigation()
 
-  const buttonTranslateY = useRef(new Animated.Value(0)).current;
-  const firstTextTranslateY = useRef(new Animated.Value(0)).current;
-  const secondTextTranslateY = useRef(new Animated.Value(-450)).current;
-  const dotContainerTranslateY = Animated.multiply(-1, secondTextTranslateY);
+	const [animationCompleted, setAnimationCompleted] = useState(false)
 
-  const lottieRef = useRef(null);
+	const buttonTranslateY = useRef(new Animated.Value(0)).current
+	const firstTextTranslateY = Animated.multiply(-1, buttonTranslateY)
+	const secondTextTranslateY = useRef(new Animated.Value(-450)).current
+	const dotContainerTranslateY = Animated.multiply(-1, secondTextTranslateY)
 
-  useEffect(() => {
-    if (lottieRef.current) {
-      setTimeout(() => {
-        lottieRef.current.reset();
-        lottieRef.current.play();
-      }, 100);
-    }
-  }, [animationCompleted]);
+	const lottieRef = useRef(null)
 
-  const loadingAnimation = () => {
-    Animated.parallel([
-      Animated.timing(firstTextTranslateY, {
-        toValue: -450,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonTranslateY, {
-        toValue: 450,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start(({ finished }) => {
-      if (finished) {
-        setAnimationCompleted(true);
-        Animated.parallel([
-          Animated.timing(secondTextTranslateY, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
-    });
-  };
+	const joinGame = () => {
+    setTimeout(() => {
+      navigation.navigate("Chat")
+      setAnimationCompleted(false)
+      // reset values
+      buttonTranslateY.setValue(0)
+      secondTextTranslateY.setValue(-450)
+    }, 3000)  // simulate loading time
+  }
 
-  const handleButtonPress = () => {
-    setQueued(true);
-    loadingAnimation();
-  };
 
-  return animationCompleted ? (
-    <View style={{ ...styles.container, gap: 20 }}>
-      <Animated.Text
-        style={{
-          ...styles.text,
-          transform: [{ translateY: secondTextTranslateY }],
-        }}
-      >
-        Looking for Human or AI
-      </Animated.Text>
+	useEffect(() => {
+		if (lottieRef.current && animationCompleted) {
+			setTimeout(() => {
+				lottieRef.current.reset()
+				lottieRef.current.play()
+			}, 100)
+		}
+	}, [animationCompleted])
 
-      <Animated.View
-        style={{
-          ...styles.loadingDotsContainer,
-          transform: [{ translateY: dotContainerTranslateY }],
-        }}
-      >
-        <LottieView
-          source={require("../assets/lottiefiles/loading.json")}
-          ref={lottieRef}
-          style={{ height: 75, width: "auto" }}
-          colorFilters={[
-            {
-              keypath: "Layer 3",
-              color: COLORS.white
-            },
-            {
-              keypath: "Layer 2",
-              color: COLORS.white
-            },
-            {
-              keypath: "Layer 1",
-              color: COLORS.white
-            },
-          ]}
+	const loadingAnimation = () => {
+    Animated.timing(buttonTranslateY, {
+      toValue: 450,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+			if (finished) {
+				setAnimationCompleted(true)
 
-        />
-      </Animated.View>
-    </View>
-  ) : (
-    <View style={styles.container}>
-      <Animated.Text
-        style={{
-          ...styles.text,
-          transform: [{ translateY: firstTextTranslateY }],
-        }}
-      >
-        Looking For a Game...?
-      </Animated.Text>
-      <Animated.View
-        style={{
-          width: "100%",
-          transform: [{ translateY: buttonTranslateY }],
-        }}
-      >
-        <Button1
-          onPress={handleButtonPress}
-          title={"Play"}
-          buttonColor={COLORS.quinary}
-          textColor={COLORS.white}
-          fontSize={SIZES.h0}
-        />
-      </Animated.View>
-    </View>
-  );
+        Animated.timing(secondTextTranslateY, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start()
+			}
+		})
+	}
+
+	const handleButtonPress = () => {
+		loadingAnimation()
+    joinGame()
+	}
+
+  console.log(animationCompleted)
+
+	return animationCompleted ? (
+		<View style={{ ...styles.container, gap: 20 }}>
+			<Animated.Text
+				style={{
+					...styles.text,
+					transform: [{ translateY: secondTextTranslateY }],
+				}}
+			>
+				Looking for Human or AI
+			</Animated.Text>
+
+			<Animated.View
+				style={{
+					...styles.loadingDotsContainer,
+					transform: [{ translateY: dotContainerTranslateY }],
+				}}
+			>
+				<LottieView
+					source={require("../assets/lottiefiles/loading.json")}
+					ref={lottieRef}
+					style={{ height: 75, width: "auto" }}
+					colorFilters={[
+						{
+							keypath: "Layer 3",
+							color: COLORS.white,
+						},
+						{
+							keypath: "Layer 2",
+							color: COLORS.white,
+						},
+						{
+							keypath: "Layer 1",
+							color: COLORS.white,
+						},
+					]}
+				/>
+			</Animated.View>
+		</View>
+	) : (
+		<View style={styles.container}>
+			<Animated.Text
+				style={{
+					...styles.text,
+					transform: [{ translateY: firstTextTranslateY }],
+				}}
+			>
+				Looking For a Game...?
+			</Animated.Text>
+			<Animated.View
+				style={{
+					width: "100%",
+					transform: [{ translateY: buttonTranslateY }],
+				}}
+			>
+				<Button1
+					onPress={handleButtonPress}
+					title={"Play"}
+					buttonColor={COLORS.quinary}
+					textColor={COLORS.white}
+					fontSize={SIZES.h0}
+				/>
+			</Animated.View>
+		</View>
+	)
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLORS.darkGray,
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loadingDots: {
-    width: 12,
-    height: 12,
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-  },
-  loadingDotsContainer: {
-    gap: 10,
-    flexDirection: "row",
-  },
-  text: {
-    color: COLORS.white,
-    fontFamily: FONTS.Roboto_Mono_Bold,
-    fontSize: SIZES.h1,
-  },
-});
+	container: {
+		backgroundColor: COLORS.darkGray,
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	loadingDots: {
+		width: 12,
+		height: 12,
+		backgroundColor: COLORS.white,
+		borderRadius: 12,
+	},
+	loadingDotsContainer: {
+		gap: 10,
+		flexDirection: "row",
+	},
+	text: {
+		color: COLORS.white,
+		fontFamily: FONTS.Roboto_Mono_Bold,
+		fontSize: SIZES.h1,
+	},
+})
