@@ -5,9 +5,8 @@ import LottieView from "lottie-react-native"
 import { COLORS, FONTS, SIZES } from "../constants"
 import { Button1 } from "../components"
 
-
-export default function HomeScreen() {
-  const navigation = useNavigation()
+export default function NewGameScreen() {
+	const navigation = useNavigation()
 
 	const [animationCompleted, setAnimationCompleted] = useState(false)
 
@@ -19,15 +18,14 @@ export default function HomeScreen() {
 	const lottieRef = useRef(null)
 
 	const joinGame = () => {
-    setTimeout(() => {
-      navigation.navigate("Chat")
-      setAnimationCompleted(false)
-      // reset values
-      buttonTranslateY.setValue(0)
-      secondTextTranslateY.setValue(-450)
-    }, 3000)  // simulate loading time
-  }
-
+		setTimeout(() => {
+			navigation.navigate("Chat")
+			setAnimationCompleted(false)
+			// reset values
+			buttonTranslateY.setValue(0)
+			secondTextTranslateY.setValue(-450)
+		}, 3000) // simulate loading time
+	}
 
 	useEffect(() => {
 		if (lottieRef.current && animationCompleted) {
@@ -39,26 +37,26 @@ export default function HomeScreen() {
 	}, [animationCompleted])
 
 	const loadingAnimation = () => {
-    Animated.timing(buttonTranslateY, {
-      toValue: 450,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
+		Animated.timing(buttonTranslateY, {
+			toValue: 450,
+			duration: 500,
+			useNativeDriver: true,
+		}).start(({ finished }) => {
 			if (finished) {
 				setAnimationCompleted(true)
 
-        Animated.timing(secondTextTranslateY, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }).start()
+				Animated.timing(secondTextTranslateY, {
+					toValue: 0,
+					duration: 500,
+					useNativeDriver: true,
+				}).start()
 			}
 		})
 	}
 
 	const handleButtonPress = () => {
 		loadingAnimation()
-    joinGame()
+		joinGame()
 	}
 
 	return animationCompleted ? (

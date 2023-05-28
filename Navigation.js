@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import LoginScreen from "./screens/LoginScreen"
 import SignUpScreen from "./screens/SignUpScreen"
 import ConfirmSignUpScreen from "./screens/ConfirmSignUpScreen"
-import HomeScreen from "./screens/HomeScreen"
+import NewGameScreen from "./screens/NewGameScreen"
 import ChatScreen from "./screens/ChatScreen"
 
 import LoadingScreen from "./screens/LoadingScreen"
@@ -29,7 +29,7 @@ function Home() {
 				tabBarStyle: { backgroundColor: COLORS.darkGray },
 			}}
 		>
-			<Stack.Screen name="Home" component={HomeScreen}></Stack.Screen>
+			<Stack.Screen name="NewGame" component={NewGameScreen}></Stack.Screen>
 			<Stack.Screen name="Chat" component={ChatScreen}></Stack.Screen>
 		</Stack.Navigator>
 	)
