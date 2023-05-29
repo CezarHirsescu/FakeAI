@@ -26,7 +26,6 @@ function Home() {
 		<Stack.Navigator
 			screenOptions={{
 				headerShown: false,
-				tabBarStyle: { backgroundColor: COLORS.darkGray },
 			}}
 		>
 			<Stack.Screen name="NewGame" component={NewGameScreen}></Stack.Screen>
