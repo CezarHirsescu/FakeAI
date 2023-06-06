@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
 	StyleSheet,
 	Text,
@@ -9,7 +9,16 @@ import {
 } from "react-native"
 import { Button1, TextInput1, BackIconButton } from "../components"
 import { COLORS, FONTS } from "../constants"
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
+import { db } from "../firebase"
+import { ref, set } from "firebase/database"
+import { useObject } from "react-firebase-hooks/database"
+
+
+function deleteRoom(roomID) {
+	const route = ref(db, "rooms/" + roomID)
+	set(route, null)
+}
 
 const confirm = (onPress) => {
 	Alert.alert("Leave Game", "Are you sure you want to exit this game?", [
@@ -38,7 +47,12 @@ const Message = ({ user, text }) => {
 	)
 }
 
-const ChatScreen = ({ chatID, AI, user1, user2 }) => {
+const ChatScreen = () => {
+	const { roomID } = useRoute().params
+	const [singleRoomSnapshot, loading, error] = useObject(
+		ref(db, "rooms/", roomID)
+	)
+
 	const navigation = useNavigation()
 	const [messages, setMessages] = useState([
 		{ user: 0, text: "Hello there" },
@@ -55,9 +69,18 @@ const ChatScreen = ({ chatID, AI, user1, user2 }) => {
 	])
 	const [newMessage, setNewMessage] = useState("")
 
-	const exit = () => {
-		navigation.navigate("NewGame")
+	function exit() {
+    navigation.navigate("NewGame")
+		deleteRoom(roomID)
 	}
+
+	// if one user quits game and deletes room, leave this screen
+	useEffect(() => {
+    if (singleRoomSnapshot && !singleRoomSnapshot.exists()) {
+        alert("The other user has left the game")
+        navigation.navigate("NewGame")
+    }
+	}, [singleRoomSnapshot])
 
 	return (
 		<SafeAreaView style={styles.container}>

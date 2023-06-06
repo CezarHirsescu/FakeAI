@@ -1,11 +1,67 @@
-import { StyleSheet, View, Animated } from "react-native"
+import { StyleSheet, View, Animated, Text } from "react-native"
 import { useRef, useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native"
 import LottieView from "lottie-react-native"
 import { COLORS, FONTS, SIZES } from "../constants"
 import { Button1 } from "../components"
+import { set, ref, push } from "firebase/database"
+import { auth, db } from "../firebase"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { useList } from "react-firebase-hooks/database"
+
+/*
+structure of data: 
+{
+  rooms: [
+    chatid1: {
+      uid1: cezarhrisescu
+      uid2: randomuser
+      isReady: true
+    },
+    chatid2: {
+      uid1: rudradey
+      uid2: null
+      isReady: false
+    },
+    ...
+  ],
+  messages: [
+    chatid1: [
+      {user: 1, text: Hello there!},
+      {user: 0, text: Hi!},
+      ...
+    ],
+    ...
+  ]
+}
+
+*/
+
+function createRoom(uid1) {
+	const roomsRef = ref(db, "rooms")
+	const list = push(roomsRef)
+	set(list, {
+		uid1: uid1,
+		isReady: false,
+	})
+
+	return list.key
+}
+
+function addSecondPlayer(roomID, uid1, uid2) {
+	const roomsRef = ref(db, "rooms/" + roomID)
+	set(roomsRef, {
+		uid1: uid1,
+		uid2: uid2,
+		isReady: true,
+	})
+}
 
 export default function NewGameScreen() {
+	const [user] = useAuthState(auth)
+	const [roomSnapshot, loading, error] = useList(ref(db, "rooms"))
+	const roomID = useRef(null)
+
 	const navigation = useNavigation()
 
 	const [animationCompleted, setAnimationCompleted] = useState(false)
@@ -17,16 +73,43 @@ export default function NewGameScreen() {
 
 	const lottieRef = useRef(null)
 
-	const joinGame = () => {
-		setTimeout(() => {
-			navigation.navigate("Chat")
-			setAnimationCompleted(false)
-			// reset values
-			buttonTranslateY.setValue(0)
-			secondTextTranslateY.setValue(-450)
-		}, 3000) // simulate loading time
+  // searches through all rooms and joins if room is not ready
+  // if all rooms are full then creates a new room
+	function joinGame() {
+		let foundGame = false
+
+		roomSnapshot.forEach((value) => {
+			if (!value.val().isReady) {
+				addSecondPlayer(value.key, value.val().uid1, user.uid)
+				roomID.current = value.key
+				foundGame = true
+				return
+			}
+		})
+
+		if (!foundGame) {
+			roomID.current = createRoom(user.uid)
+		}
 	}
 
+	// navigate to ChatScreen when our room is ready
+	useEffect(() => {
+		const room = roomSnapshot.find((value) => value.key === roomID.current)
+
+		// if a room is created and the room has both players
+		if (room && room.val().isReady) {
+			navigation.navigate("Chat", {
+				roomID: roomID.current,
+			}) // navigate to chat when game is found
+
+			// reset animation values
+			setAnimationCompleted(false)
+			buttonTranslateY.setValue(0)
+			secondTextTranslateY.setValue(-450)
+		}
+	}, [roomSnapshot])
+
+	// for animation purposes
 	useEffect(() => {
 		if (lottieRef.current && animationCompleted) {
 			setTimeout(() => {
@@ -36,7 +119,7 @@ export default function NewGameScreen() {
 		}
 	}, [animationCompleted])
 
-	const loadingAnimation = () => {
+	function loadingAnimation() {
 		Animated.timing(buttonTranslateY, {
 			toValue: 450,
 			duration: 500,
@@ -54,7 +137,7 @@ export default function NewGameScreen() {
 		})
 	}
 
-	const handleButtonPress = () => {
+	const handleNewGamePress = () => {
 		loadingAnimation()
 		joinGame()
 	}
@@ -114,7 +197,7 @@ export default function NewGameScreen() {
 				}}
 			>
 				<Button1
-					onPress={handleButtonPress}
+					onPress={handleNewGamePress}
 					title={"Play"}
 					buttonColor={COLORS.quinary}
 					textColor={COLORS.white}
