@@ -52,15 +52,15 @@ function Tabs() {
 					),
 				}}
 			/>
-			<Tab.Screen
+			{/* <Tab.Screen
 				name="Chat"
-				component={ChatScreen}
+				component={ChatScreen}   <---- (!!!) this breaks the app because ChatScreen needs a room ID 
 				options={{
 					tabBarIcon: ({ color, size }) => (
 					<MaterialCommunityIcons name="chat" color={color} size={size} />
 					),
 				}}
-			/>
+			/> */}
 			<Tab.Screen
 				name="Profile"
 				component={ProfileScreen}
