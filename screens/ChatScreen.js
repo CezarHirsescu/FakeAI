@@ -11,13 +11,28 @@ import { Button1, TextInput1, BackIconButton } from "../components"
 import { COLORS, FONTS } from "../constants"
 import { useNavigation, useRoute } from "@react-navigation/native"
 import { db } from "../firebase"
-import { ref, set } from "firebase/database"
-import { useObject } from "react-firebase-hooks/database"
-
+import { ref, set, push } from "firebase/database"
+import { useList, useListVals, useObject } from "react-firebase-hooks/database"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "../firebase"
 
 function deleteRoom(roomID) {
 	const route = ref(db, "rooms/" + roomID)
 	set(route, null)
+}
+
+function deleteMessages(roomID) {
+	const route = ref(db, "messages/" + roomID)
+	set(route, null)
+}
+
+function sendMessage(roomID, uid, message) {
+	const route = ref(db, "messages/" + roomID)
+	const list = push(route)
+	set(list, {
+		uid: uid,
+		message: message,
+	})
 }
 
 const confirm = (onPress) => {
@@ -27,17 +42,17 @@ const confirm = (onPress) => {
 	])
 }
 
-const Message = ({ user, text }) => {
+const Message = ({ isSent, text }) => {
 	return (
 		<View
 			style={[
 				// styles.messageWrapper,
-				user === 0 ? styles.messageWrapperSent : styles.messsageWrapperRecieved,
+				isSent ? styles.messageWrapperSent : styles.messsageWrapperRecieved,
 			]}
 		>
 			<Text
 				style={[
-					user === 0 ? styles.messageSent : styles.messageReceived,
+					isSent ? styles.messageSent : styles.messageReceived,
 					styles.message,
 				]}
 			>
@@ -49,37 +64,40 @@ const Message = ({ user, text }) => {
 
 const ChatScreen = () => {
 	const { roomID } = useRoute().params
-	const [singleRoomSnapshot, loading, error] = useObject(
-		ref(db, "rooms/", roomID)
+	const [user] = useAuthState(auth)
+	const [singleRoomSnapshot] = useObject(ref(db, "rooms/" + roomID))
+	const [messagesSnapshot, loading, error] = useListVals(
+		ref(db, "messages/" + roomID)
 	)
 
 	const navigation = useNavigation()
-	const [messages, setMessages] = useState([
-		{ user: 0, text: "Hello there" },
-		{ user: 1, text: "General Kenobi... You are a bold one." },
-		{ user: 1, text: "Kill Him..." },
-		{ user: 0, text: "*defeats droid enemies with ease" },
-		{ user: 1, text: "Back away! I will deal with this jedi slime myself." },
-		{ user: 0, text: "Your move." },
-		{
-			user: 1,
-			text: "You fool! I've been trained in your jedi arts by count Dooku himself...",
-		},
-		{ user: 1, text: "Attack, Kenobi..." },
-	])
+	
 	const [newMessage, setNewMessage] = useState("")
 
 	function exit() {
-    navigation.navigate("NewGame")
+		navigation.navigate("NewGame")
 		deleteRoom(roomID)
 	}
 
+	function handleButtonPress() {
+		sendMessage(roomID, user.uid, newMessage)
+		setNewMessage("")
+	}
+
+  // if a user disconnects or closes the app, close the screen and exit the room
+  useEffect(() => {
+    if (!user) {
+      exit()
+    }
+  }, [user])
+
 	// if one user quits game and deletes room, leave this screen
 	useEffect(() => {
-    if (singleRoomSnapshot && !singleRoomSnapshot.exists()) {
-        alert("The other user has left the game")
-        navigation.navigate("NewGame")
-    }
+		if (singleRoomSnapshot && !singleRoomSnapshot.exists()) {
+			alert("The other user has left the game")
+			navigation.navigate("NewGame")
+			deleteMessages(roomID)
+		}
 	}, [singleRoomSnapshot])
 
 	return (
@@ -91,24 +109,25 @@ const ChatScreen = () => {
 					color={COLORS.white}
 				/>
 			</View>
-			<FlatList
-				style={styles.messageContainer}
-				data={messages}
-				renderItem={({ item }) => <Message user={item.user} text={item.text} />}
-			/>
+			{!loading ? (
+				<FlatList
+					style={styles.messageContainer}
+					data={messagesSnapshot}
+					renderItem={({ item }) => (
+						<Message isSent={item.uid === user.uid} text={item.message} />
+					)}
+				/>
+			) : (
+				<Text>Loading...</Text>
+			)}
+
 			<View style={styles.bottomBar}>
 				<TextInput1
 					value={newMessage}
 					setValue={setNewMessage}
 					placeholder={"Type Something..."}
 				/>
-				<Button1
-					onPress={() => {
-						setMessages((prev) => [...prev, { user: 0, text: newMessage }])
-						setNewMessage("")
-					}}
-					title={"Send"}
-				/>
+				<Button1 onPress={handleButtonPress} title={"Send"} />
 			</View>
 		</SafeAreaView>
 	)

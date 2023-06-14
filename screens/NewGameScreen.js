@@ -38,8 +38,8 @@ structure of data:
 */
 
 function createRoom(uid1) {
-	const roomsRef = ref(db, "rooms")
-	const list = push(roomsRef)
+	const route = ref(db, "rooms")
+	const list = push(route)
 	set(list, {
 		uid1: uid1,
 		isReady: false,
@@ -49,8 +49,8 @@ function createRoom(uid1) {
 }
 
 function addSecondPlayer(roomID, uid1, uid2) {
-	const roomsRef = ref(db, "rooms/" + roomID)
-	set(roomsRef, {
+	const route = ref(db, "rooms/" + roomID)
+	set(route, {
 		uid1: uid1,
 		uid2: uid2,
 		isReady: true,
@@ -98,9 +98,12 @@ export default function NewGameScreen() {
 
 		// if a room is created and the room has both players
 		if (room && room.val().isReady) {
+      // create chat instance in database
+
+      // navigate to chat screen when game is found
 			navigation.navigate("Chat", {
 				roomID: roomID.current,
-			}) // navigate to chat when game is found
+			}) 
 
 			// reset animation values
 			setAnimationCompleted(false)
