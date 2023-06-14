@@ -74,9 +74,11 @@ const ChatScreen = () => {
 	
 	const [newMessage, setNewMessage] = useState("")
 
+  // navigate out of window and delete all message information since the game is over
 	function exit() {
 		navigation.navigate("NewGame")
-		deleteRoom(roomID)
+    deleteRoom(roomID)
+    deleteMessages(roomID)
 	}
 
 	function handleButtonPress() {
@@ -84,19 +86,12 @@ const ChatScreen = () => {
 		setNewMessage("")
 	}
 
-  // if a user disconnects or closes the app, close the screen and exit the room
-  useEffect(() => {
-    if (!user) {
-      exit()
-    }
-  }, [user])
 
 	// if one user quits game and deletes room, leave this screen
 	useEffect(() => {
 		if (singleRoomSnapshot && !singleRoomSnapshot.exists()) {
 			alert("The other user has left the game")
 			navigation.navigate("NewGame")
-			deleteMessages(roomID)
 		}
 	}, [singleRoomSnapshot])
 
